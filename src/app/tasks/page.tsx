@@ -335,52 +335,63 @@ export default function Tasks() {
                 </div>
                 
                 {isAddingTask && (
-                    <div className="bg-gray-800 p-6 rounded-lg shadow-xl mb-6">
-                        <h2 className="text-2xl font-semibold text-gray-200 mb-4">
-                            {editingTask ? 'Edit Task' : 'Add New Task'}
-                        </h2>
-                        <div className="flex flex-col gap-4">
-                            <div>
-                                <textarea
-                                    value={newTask.task}
-                                    onChange={(e) => setNewTask(prev => ({ ...prev, task: e.target.value }))}
-                                    placeholder="Task Description"
-                                    rows={3}
-                                    className="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[80px]"
-                                />
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div className="bg-gray-800 rounded-lg p-5 w-[500px] shadow-xl">
+                            <h2 className="text-xl font-semibold text-gray-200 mb-4">
+                                {editingTask ? 'Edit Task' : 'Add New Task'}
+                            </h2>
+                            <div className="flex flex-col gap-4">
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">Description</label>
+                                    <textarea
+                                        value={newTask.task}
+                                        onChange={(e) => setNewTask(prev => ({ ...prev, task: e.target.value }))}
+                                        placeholder="What needs to be done?"
+                                        rows={3}
+                                        className="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-1">Priority</label>
+                                        <select
+                                            value={newTask.priority}
+                                            onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
+                                            className="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        >
+                                            <option value="Low">Low</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="High">High</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-1">Due Date</label>
+                                        <input
+                                            type="date"
+                                            value={newTask.dueDate}
+                                            onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                                            className="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                            <select
-                                value={newTask.priority}
-                                onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
-                                className="bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                            </select>
-                            <input
-                                type="date"
-                                value={newTask.dueDate}
-                                onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                                className="bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <div className="mt-4 flex justify-end gap-2">
-                            <button
-                                onClick={() => {
-                                    setIsAddingTask(false);
-                                    setEditingTask(null);
-                                }}
-                                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={editingTask ? handleUpdateTask : handleAddTask}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
-                            >
-                                {editingTask ? 'Update Task' : 'Add Task'}
-                            </button>
+                            <div className="mt-6 flex justify-end gap-3">
+                                <button
+                                    onClick={() => {
+                                        setIsAddingTask(false);
+                                        setEditingTask(null);
+                                    }}
+                                    className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={editingTask ? handleUpdateTask : handleAddTask}
+                                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors text-sm"
+                                >
+                                    {editingTask ? 'Update Task' : 'Add Task'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
