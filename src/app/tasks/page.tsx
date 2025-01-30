@@ -63,12 +63,9 @@ const truncateStyles = `
   }
 
   .truncate-fade {
-    position: absolute;
-    top: 0;
-    left: 6px;
-    right: 6px;
-    max-width: 600px;  /* Increased from 400px */
-    min-width: 200px;
+    position: relative;
+    max-width: 500px;
+    min-width: 150px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -78,6 +75,7 @@ const truncateStyles = `
     border: 1px solid rgba(75, 85, 99, 0.2);
     height: 32px;
     line-height: 24px;
+    transition: all 0.2s ease;
   }
 
   .truncate-fade::after {
@@ -92,6 +90,7 @@ const truncateStyles = `
   }
 
   .truncate-fade:hover {
+    position: absolute;
     height: auto;
     min-height: 32px;
     white-space: normal;
@@ -99,6 +98,7 @@ const truncateStyles = `
     background: rgb(31, 41, 55);
     z-index: 999;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
   }
 
   .truncate-fade:hover::after {
@@ -313,7 +313,7 @@ export default function Tasks() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 px-8">
+        <div className="min-h-screen bg-gray-900 px-8 pb-32">
             <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-semibold text-white">Tasks</h1>
@@ -385,9 +385,9 @@ export default function Tasks() {
                     </div>
                 )}
 
-                <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full table-auto">
+                <div className="bg-gray-800 rounded-lg shadow-xl overflow-visible">
+                    <div className="overflow-visible">
+                        <table className="w-full table-auto relative">
                             <thead className="bg-gray-700">
                                 <tr>
                                     <th className="w-[45%] px-6 py-3 text-left text-sm font-medium text-gray-300">Task</th>
@@ -411,44 +411,67 @@ export default function Tasks() {
                                             <div className="flex justify-start w-full">
                                                 <div className="relative w-[140px]">
                                                     <Listbox value={task.status} onChange={(newStatus) => handleStatusChange(task.id, newStatus)}>
-                                                        <div className="relative">
-                                                            <Listbox.Button className={`${statusStyles[task.status]} relative w-full cursor-pointer rounded-full pl-3 pr-8 py-1 text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-blue-500`}>
-                                                                <span className="block truncate">{task.status}</span>
-                                                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                                    <ChevronDownIcon className={`h-4 w-4 ${statusStyles[task.status].split(' ')[1]}`} />
-                                                                </span>
-                                                            </Listbox.Button>
-                                                            <Transition
-                                                                as={Fragment}
-                                                                leave="transition ease-in duration-100"
-                                                                leaveFrom="opacity-100"
-                                                                leaveTo="opacity-0"
-                                                            >
-                                                                <Listbox.Options className="absolute z-50 mt-1 w-full overflow-auto rounded-lg bg-gray-800 py-0.5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm">
-                                                                    {["To Do", "In Progress", "Completed"].map((status) => (
-                                                                        <Listbox.Option
-                                                                            key={status}
-                                                                            value={status}
-                                                                            className={({ active }) =>
-                                                                                `relative cursor-pointer select-none py-1.5 pl-3 pr-9 ${
-                                                                                    active ? 'bg-gray-700' : 'bg-gray-800'
-                                                                                } ${statusStyles[status].split(' ')[1]}`
-                                                                            }
-                                                                        >
-                                                                            {status}
-                                                                        </Listbox.Option>
-                                                                    ))}
-                                                                </Listbox.Options>
-                                                            </Transition>
-                                                        </div>
+                                                        {({ open }) => {
+                                                            // Calculate position once when opening
+                                                            const buttonRef = React.useRef<DOMRect | null>(null);
+                                                            React.useEffect(() => {
+                                                                if (open) {
+                                                                    buttonRef.current = document.activeElement?.getBoundingClientRect() || null;
+                                                                }
+                                                            }, [open]);
+
+                                                            return (
+                                                                <div className="relative">
+                                                                    <Listbox.Button className={`${statusStyles[task.status]} relative w-full cursor-pointer rounded-full pl-3 pr-8 py-1 text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-blue-500`}>
+                                                                        <span className="block truncate">{task.status}</span>
+                                                                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                                                            <ChevronDownIcon className={`h-4 w-4 ${statusStyles[task.status].split(' ')[1]}`} />
+                                                                        </span>
+                                                                    </Listbox.Button>
+                                                                    <Transition
+                                                                        as={Fragment}
+                                                                        leave="transition ease-in duration-100"
+                                                                        leaveFrom="opacity-100"
+                                                                        leaveTo="opacity-0"
+                                                                    >
+                                                                        <div className="relative">
+                                                                            <Listbox.Options 
+                                                                                className="absolute z-[999] w-[140px] overflow-auto rounded-lg bg-gray-800 py-0.5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm"
+                                                                                style={{
+                                                                                    position: 'fixed',
+                                                                                    transform: 'translate3d(0, 0, 0)',
+                                                                                    top: buttonRef.current ? `${buttonRef.current.bottom + 4}px` : '0',
+                                                                                    left: buttonRef.current ? `${buttonRef.current.left}px` : '0',
+                                                                                    display: !buttonRef.current ? 'none' : undefined
+                                                                                }}
+                                                                            >
+                                                                                {["To Do", "In Progress", "Completed"].map((status) => (
+                                                                                    <Listbox.Option
+                                                                                        key={status}
+                                                                                        value={status}
+                                                                                        className={({ active }) =>
+                                                                                            `relative cursor-pointer select-none py-1.5 pl-3 pr-9 ${
+                                                                                                active ? 'bg-gray-700' : 'bg-gray-800'
+                                                                                            } ${statusStyles[status].split(' ')[1]}`
+                                                                                        }
+                                                                                    >
+                                                                                        {status}
+                                                                                    </Listbox.Option>
+                                                                                ))}
+                                                                            </Listbox.Options>
+                                                                        </div>
+                                                                    </Transition>
+                                                                </div>
+                                                            );
+                                                        }}
                                                     </Listbox>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-1 text-left whitespace-nowrap">
+                                        <td className="px-6 py-1 text-white whitespace-nowrap">
                                             {formatDate(task.dueDate)}
                                         </td>
-                                        <td className="px-6 py-1 text-left whitespace-nowrap">
+                                        <td className="px-6 py-1 text-white whitespace-nowrap">
                                             {task.priority}
                                         </td>
                                         <td className="px-6 py-1">
