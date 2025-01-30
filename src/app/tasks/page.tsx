@@ -282,6 +282,36 @@ export default function Tasks() {
         "Completed": "bg-green-500/20 text-green-500 border-green-500"
     };
 
+    // Add this sorting function
+    const sortTasks = (tasks: Task[]) => {
+        const statusOrder = {
+            "In Progress": 0,
+            "To Do": 1,
+            "Completed": 2
+        };
+
+        const priorityOrder = {
+            "High": 0,
+            "Medium": 1,
+            "Low": 2
+        };
+
+        return [...tasks].sort((a, b) => {
+            // First sort by status
+            if (statusOrder[a.status] !== statusOrder[b.status]) {
+                return statusOrder[a.status] - statusOrder[b.status];
+            }
+            
+            // Within status, sort by priority
+            if (a.priority !== b.priority) {
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            }
+            
+            // Within priority, sort by date (closest date first)
+            return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        });
+    };
+
     return (
         <div className="min-h-screen bg-gray-900 p-8">
             <div className="max-w-6xl mx-auto">
@@ -363,7 +393,7 @@ export default function Tasks() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-700">
-                                {tasks.map((task) => (
+                                {sortTasks(tasks).map((task) => (
                                     <tr key={task.id} className="hover:bg-gray-700 transition-colors">
                                         <td className="px-6 py-1 text-white">
                                             <div className="truncate-container">
