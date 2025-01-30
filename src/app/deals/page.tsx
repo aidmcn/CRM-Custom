@@ -54,6 +54,12 @@ const stageStyles: Record<string, string> = {
     "Closed Lost": "bg-red-500/20 text-red-400"
 };
 
+const CURRENCIES = [
+    { code: 'EUR', symbol: '€', name: 'Euro' },
+    { code: 'USD', symbol: '$', name: 'US Dollar' },
+    { code: 'GBP', symbol: '£', name: 'British Pound' },
+];
+
 export default function Deals() {
     const [deals, setDeals] = useState<Deal[]>([]);
     const [contacts, setContacts] = useState<Contact[]>([]);
@@ -294,12 +300,12 @@ export default function Deals() {
                             className="bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">
+                            <label className="block text-sm font-medium text-white">
                                 Value ({settings.currency})
                             </label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span className="text-gray-500 sm:text-sm">
+                                    <span className="text-gray-400 sm:text-sm">
                                         {CURRENCIES.find(c => c.code === settings.currency)?.symbol || '$'}
                                     </span>
                                 </div>
@@ -308,15 +314,14 @@ export default function Deals() {
                                     name="value"
                                     value={newDeal.value}
                                     onChange={(e) => {
-                                        // Only allow numbers and decimal point
                                         const value = e.target.value.replace(/[^0-9.]/g, '');
                                         setNewDeal({ ...newDeal, value });
                                     }}
-                                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+                                    className="bg-gray-700 text-white w-full pl-7 pr-12 sm:text-sm rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="0.00"
                                 />
                                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <span className="text-gray-500 sm:text-sm">{settings.currency}</span>
+                                    <span className="text-gray-400 sm:text-sm">{settings.currency}</span>
                                 </div>
                             </div>
                         </div>
@@ -410,13 +415,13 @@ export default function Deals() {
                                             onClick={() => handleEditClick(deal)}
                                             className="p-2 hover:bg-gray-700 rounded-md transition-colors mx-1"
                                         >
-                                            <PencilSquareIcon className="h-5 w-5 text-white" />
+                                            <PencilSquareIcon className="h-5 w-5 text-blue-500" />
                                         </button>
                                         <button 
                                             onClick={() => handleDeleteClick(deal.id)}
                                             className="p-2 hover:bg-gray-700 rounded-md transition-colors mx-1"
                                         >
-                                            <TrashIcon className="h-5 w-5 text-white" />
+                                            <TrashIcon className="h-5 w-5 text-red-500" />
                                         </button>
                                     </td>
                                 </tr>

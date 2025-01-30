@@ -6,14 +6,8 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    if (!params?.id) {
-      return NextResponse.json({ error: 'Task ID is required' }, { status: 400 });
-    }
-
-    const taskId = parseInt(params.id);
-    if (isNaN(taskId)) {
-      return NextResponse.json({ error: 'Invalid task ID' }, { status: 400 });
-    }
+    const { id } = params;
+    const taskId = parseInt(id, 10);
 
     const json = await request.json();
     if (!json) {
@@ -45,14 +39,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    if (!params?.id) {
-      return NextResponse.json({ error: 'Task ID is required' }, { status: 400 });
-    }
-
-    const taskId = parseInt(params.id);
-    if (isNaN(taskId)) {
-      return NextResponse.json({ error: 'Invalid task ID' }, { status: 400 });
-    }
+    const { id } = params;
+    const taskId = parseInt(id, 10);
 
     await prisma.task.delete({
       where: { id: taskId },

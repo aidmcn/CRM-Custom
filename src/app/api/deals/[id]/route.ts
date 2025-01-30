@@ -6,8 +6,14 @@ export async function PUT(
     { params }: { params: { id: string } }
 ) {
     try {
-        const { id } = params;
-        const dealId = parseInt(id, 10);
+        if (!params?.id) {
+            return NextResponse.json({ error: 'Deal ID is required' }, { status: 400 });
+        }
+
+        const dealId = parseInt(params.id, 10);
+        if (isNaN(dealId)) {
+            return NextResponse.json({ error: 'Invalid deal ID' }, { status: 400 });
+        }
 
         const json = await request.json();
         console.log('Received payload:', json);
@@ -21,7 +27,7 @@ export async function PUT(
             },
             data: {
                 name,
-                value: parseFloat(value.toString()),
+                value: value.toString(),
                 stage,
                 contactId: contactId ? parseInt(contactId.toString()) : null
             },
