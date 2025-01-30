@@ -30,8 +30,17 @@ export default function Settings() {
         <div>
           <h2 className="text-xl font-semibold text-gray-300 mb-4">Currency</h2>
           <select
-            value={settings.currency}
-            onChange={(e) => updateSettings({ currency: e.target.value })}
+            value={settings.currency.code}
+            onChange={(e) => {
+              const selectedCurrency = CURRENCIES.find(c => c.code === e.target.value);
+              updateSettings({ 
+                currency: {
+                  code: selectedCurrency.code,
+                  symbol: selectedCurrency.symbol,
+                  name: selectedCurrency.name
+                }
+              });
+            }}
             className="bg-gray-800 text-white px-4 py-2 rounded-md w-full max-w-xs"
           >
             {CURRENCIES.map((currency) => (

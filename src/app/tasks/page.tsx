@@ -313,7 +313,7 @@ export default function Tasks() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 p-8">
+        <div className="min-h-screen bg-gray-900 px-8">
             <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-semibold text-white">Tasks</h1>
@@ -336,14 +336,19 @@ export default function Tasks() {
                 
                 {isAddingTask && (
                     <div className="bg-gray-800 p-6 rounded-lg shadow-xl mb-6">
-                        <div className="grid grid-cols-2 gap-4">
-                            <input
-                                type="text"
-                                placeholder="Task name"
-                                value={newTask.task}
-                                onChange={(e) => setNewTask({ ...newTask, task: e.target.value })}
-                                className="bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+                        <h2 className="text-2xl font-semibold text-gray-200 mb-4">
+                            {editingTask ? 'Edit Task' : 'Add New Task'}
+                        </h2>
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <textarea
+                                    value={newTask.task}
+                                    onChange={(e) => setNewTask(prev => ({ ...prev, task: e.target.value }))}
+                                    placeholder="Task Description"
+                                    rows={3}
+                                    className="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[80px]"
+                                />
+                            </div>
                             <select
                                 value={newTask.priority}
                                 onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
@@ -389,7 +394,7 @@ export default function Tasks() {
                                     <th className="w-[20%] px-6 py-3 text-left text-sm font-medium text-gray-300">Status</th>
                                     <th className="w-[15%] px-6 py-3 text-left text-sm font-medium text-gray-300">Due Date</th>
                                     <th className="w-[15%] px-6 py-3 text-left text-sm font-medium text-gray-300">Priority</th>
-                                    <th className="w-[5%] px-6 py-3 text-right text-sm font-medium text-gray-300">Actions</th>
+                                    <th className="w-[5%] px-6 py-3 text-left text-sm font-medium text-gray-300">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-700">
@@ -397,7 +402,7 @@ export default function Tasks() {
                                     <tr key={task.id} className="hover:bg-gray-700 transition-colors">
                                         <td className="px-6 py-1 text-white">
                                             <div className="truncate-container">
-                                                <div className="truncate-fade text-white">
+                                                <div className="truncate-fade">
                                                     {task.task}
                                                 </div>
                                             </div>
@@ -440,28 +445,28 @@ export default function Tasks() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-1 text-right">
+                                        <td className="px-6 py-1 text-left whitespace-nowrap">
                                             {formatDate(task.dueDate)}
                                         </td>
-                                        <td className="px-6 py-1 text-right">
+                                        <td className="px-6 py-1 text-left whitespace-nowrap">
                                             {task.priority}
                                         </td>
                                         <td className="px-6 py-1">
-                                            <div className="flex justify-end gap-2">
+                                            <div className="flex justify-start gap-3">
                                                 <button
                                                     onClick={() => handleEditClick(task)}
-                                                    className="text-blue-500 hover:text-blue-600"
+                                                    className="text-blue-500 hover:text-blue-600 p-1"
                                                 >
-                                                    <PencilSquareIcon className="h-4 w-4" />
+                                                    <PencilSquareIcon className="h-6 w-6" />
                                                 </button>
                                                 <button
                                                     onClick={() => {
                                                         setShowDeleteModal(true);
                                                         setTaskToDelete(task.id);
                                                     }}
-                                                    className="text-red-500 hover:text-red-600"
+                                                    className="text-red-500 hover:text-red-600 p-1"
                                                 >
-                                                    <TrashIcon className="h-4 w-4" />
+                                                    <TrashIcon className="h-6 w-6" />
                                                 </button>
                                             </div>
                                         </td>

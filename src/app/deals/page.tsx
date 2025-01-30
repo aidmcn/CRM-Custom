@@ -95,7 +95,7 @@ export default function Deals() {
         const numericValue = parseFloat(value);
         return new Intl.NumberFormat(settings.locale, {
             style: 'currency',
-            currency: settings.currency,
+            currency: settings.currency.code,
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         }).format(numericValue);
@@ -331,8 +331,8 @@ export default function Deals() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 p-8">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gray-900 px-8">
+            <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-semibold text-white">Deals</h1>
                     <button 
@@ -362,12 +362,12 @@ export default function Deals() {
                             />
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-white">
-                                    Value ({settings.currency})
+                                    Value ({settings.currency.symbol})
                                 </label>
                                 <div className="mt-1 relative rounded-md shadow-sm">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span className="text-gray-400 sm:text-sm">
-                                            {CURRENCIES.find(c => c.code === settings.currency)?.symbol || '$'}
+                                            {CURRENCIES.find(c => c.code === settings.currency.code)?.symbol || '$'}
                                         </span>
                                     </div>
                                     <input
@@ -382,7 +382,7 @@ export default function Deals() {
                                         placeholder="0.00"
                                     />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <span className="text-gray-400 sm:text-sm">{settings.currency}</span>
+                                        <span className="text-gray-400 sm:text-sm">{settings.currency.code}</span>
                                     </div>
                                 </div>
                             </div>

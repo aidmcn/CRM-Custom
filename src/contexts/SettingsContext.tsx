@@ -3,6 +3,12 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface Settings {
     theme: 'light' | 'dark';
+    currency: {
+        code: string;
+        symbol: string;
+        name: string;
+    };
+    locale: string;
     // Add more settings as needed
 }
 
@@ -16,6 +22,12 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export function SettingsProvider({ children }: { children: ReactNode }) {
     const [settings, setSettings] = useState<Settings>({
         theme: 'dark',
+        currency: {
+            code: 'USD',
+            symbol: '$',
+            name: 'US Dollar'
+        },
+        locale: 'en-US',
     });
 
     const updateSettings = (newSettings: Partial<Settings>) => {
