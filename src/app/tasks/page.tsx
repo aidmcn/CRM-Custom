@@ -1,4 +1,5 @@
 "use client";
+import React from 'react';
 import { useState, useEffect, Fragment } from "react";
 import { PencilSquareIcon, TrashIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Listbox, Transition } from "@headlessui/react";
@@ -53,6 +54,58 @@ const formatDate = (dateString: string) => {
     });
 };
 
+const truncateStyles = `
+  .truncate-container {
+    position: relative;
+    height: 32px;
+    padding: 0 6px;
+    width: 100%;
+  }
+
+  .truncate-fade {
+    position: absolute;
+    top: 0;
+    left: 6px;
+    right: 6px;
+    max-width: 600px;  /* Increased from 400px */
+    min-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(31, 41, 55, 0.5);
+    border: 1px solid rgba(75, 85, 99, 0.2);
+    height: 32px;
+    line-height: 24px;
+  }
+
+  .truncate-fade::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 50px;
+    background: linear-gradient(to right, rgba(31, 41, 55, 0) 0%, rgb(31, 41, 55) 100%);
+    pointer-events: none;
+  }
+
+  .truncate-fade:hover {
+    height: auto;
+    min-height: 32px;
+    white-space: normal;
+    overflow: visible;
+    background: rgb(31, 41, 55);
+    z-index: 999;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .truncate-fade:hover::after {
+    display: none;
+  }
+`;
+
 export default function Tasks() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isAddingTask, setIsAddingTask] = useState(false);
@@ -67,8 +120,30 @@ export default function Tasks() {
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
     useEffect(() => {
+        // Create style element
+        const style = document.createElement('style');
+        style.textContent = truncateStyles;
+        document.head.appendChild(style);
+
+        // Cleanup
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []); // Empty dependency array means this runs once on mount
+
+    useEffect(() => {
         fetchTasks();
     }, []);
+
+    useEffect(() => {
+        const elements = document.querySelectorAll('.truncate-fade');
+        elements.forEach(el => {
+            if (el instanceof HTMLElement) {
+                const isTruncated = el.scrollWidth > el.clientWidth;
+                el.style.pointerEvents = isTruncated ? 'auto' : 'none';
+            }
+        });
+    }, [tasks]);
 
     const fetchTasks = async () => {
         try {
@@ -196,7 +271,6 @@ export default function Tasks() {
         } catch (error) {
             console.error('Error deleting task:', error);
             if (taskToRestore) {
-                // Revert on error
                 setTasks(currentTasks => [...currentTasks, taskToRestore]);
             }
         }
@@ -210,7 +284,7 @@ export default function Tasks() {
 
     return (
         <div className="min-h-screen bg-gray-900 p-8">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-semibold text-white">Tasks</h1>
                     <button 
@@ -281,76 +355,85 @@ export default function Tasks() {
                         <table className="w-full table-auto">
                             <thead className="bg-gray-700">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Task</th>
-                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Status</th>
-                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Priority</th>
-                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Due Date</th>
-                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-300">Actions</th>
+                                    <th className="w-[45%] px-6 py-3 text-left text-sm font-medium text-gray-300">Task</th>
+                                    <th className="w-[20%] px-6 py-3 text-left text-sm font-medium text-gray-300">Status</th>
+                                    <th className="w-[15%] px-6 py-3 text-left text-sm font-medium text-gray-300">Due Date</th>
+                                    <th className="w-[15%] px-6 py-3 text-left text-sm font-medium text-gray-300">Priority</th>
+                                    <th className="w-[5%] px-6 py-3 text-right text-sm font-medium text-gray-300">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-700">
                                 {tasks.map((task) => (
                                     <tr key={task.id} className="hover:bg-gray-700 transition-colors">
-                                        <td className="px-6 py-4 text-white">{task.task}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="relative w-[140px]">
-                                                <Listbox value={task.status} onChange={(newStatus) => handleStatusChange(task.id, newStatus)}>
-                                                    <div className="relative">
-                                                        <Listbox.Button className={`${statusStyles[task.status]} relative w-full cursor-pointer rounded-full pl-3 pr-8 py-1 text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-blue-500`}>
-                                                            <span className="block truncate">{task.status}</span>
-                                                            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                                <ChevronDownIcon className={`h-4 w-4 ${statusStyles[task.status].split(' ')[1]}`} />
-                                                            </span>
-                                                        </Listbox.Button>
-                                                        <Transition
-                                                            as={Fragment}
-                                                            leave="transition ease-in duration-100"
-                                                            leaveFrom="opacity-100"
-                                                            leaveTo="opacity-0"
-                                                        >
-                                                            <Listbox.Options className="absolute z-50 mt-1 w-full overflow-auto rounded-lg bg-gray-800 py-0.5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm">
-                                                                {["To Do", "In Progress", "Completed"].map((status) => (
-                                                                    <Listbox.Option
-                                                                        key={status}
-                                                                        value={status}
-                                                                        className={({ active }) =>
-                                                                            `relative cursor-pointer select-none py-1.5 pl-3 pr-9 ${
-                                                                                active ? 'bg-gray-700' : ''
-                                                                            }`
-                                                                        }
-                                                                    >
-                                                                        {({ selected }) => (
-                                                                            <span className={`block truncate ${statusStyles[status as keyof typeof statusStyles].split(' ')[1]}`}>
-                                                                                {status}
-                                                                            </span>
-                                                                        )}
-                                                                    </Listbox.Option>
-                                                                ))}
-                                                            </Listbox.Options>
-                                                        </Transition>
-                                                    </div>
-                                                </Listbox>
+                                        <td className="px-6 py-1 text-white">
+                                            <div className="truncate-container">
+                                                <div className="truncate-fade text-white">
+                                                    {task.task}
+                                                </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-white">{task.priority}</td>
-                                        <td className="px-6 py-4">
-                                            <span className="bg-gray-700 text-gray-300 px-3 py-1 rounded-md text-sm">
-                                                {formatDate(task.dueDate)}
-                                            </span>
+                                        <td className="px-6 py-1">
+                                            <div className="flex justify-start w-full">
+                                                <div className="relative w-[140px]">
+                                                    <Listbox value={task.status} onChange={(newStatus) => handleStatusChange(task.id, newStatus)}>
+                                                        <div className="relative">
+                                                            <Listbox.Button className={`${statusStyles[task.status]} relative w-full cursor-pointer rounded-full pl-3 pr-8 py-1 text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-blue-500`}>
+                                                                <span className="block truncate">{task.status}</span>
+                                                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                                                    <ChevronDownIcon className={`h-4 w-4 ${statusStyles[task.status].split(' ')[1]}`} />
+                                                                </span>
+                                                            </Listbox.Button>
+                                                            <Transition
+                                                                as={Fragment}
+                                                                leave="transition ease-in duration-100"
+                                                                leaveFrom="opacity-100"
+                                                                leaveTo="opacity-0"
+                                                            >
+                                                                <Listbox.Options className="absolute z-50 mt-1 w-full overflow-auto rounded-lg bg-gray-800 py-0.5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm">
+                                                                    {["To Do", "In Progress", "Completed"].map((status) => (
+                                                                        <Listbox.Option
+                                                                            key={status}
+                                                                            value={status}
+                                                                            className={({ active }) =>
+                                                                                `relative cursor-pointer select-none py-1.5 pl-3 pr-9 ${
+                                                                                    active ? 'bg-gray-700' : 'bg-gray-800'
+                                                                                } ${statusStyles[status].split(' ')[1]}`
+                                                                            }
+                                                                        >
+                                                                            {status}
+                                                                        </Listbox.Option>
+                                                                    ))}
+                                                                </Listbox.Options>
+                                                            </Transition>
+                                                        </div>
+                                                    </Listbox>
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <button 
-                                                onClick={() => handleEditClick(task)}
-                                                className="p-2 hover:bg-gray-600 rounded-md transition-colors mx-1"
-                                            >
-                                                <PencilSquareIcon className="h-5 w-5 text-blue-500" />
-                                            </button>
-                                            <button 
-                                                onClick={() => handleDeleteTask(task.id)}
-                                                className="p-2 hover:bg-gray-600 rounded-md transition-colors mx-1"
-                                            >
-                                                <TrashIcon className="h-5 w-5 text-red-500" />
-                                            </button>
+                                        <td className="px-6 py-1 text-right">
+                                            {formatDate(task.dueDate)}
+                                        </td>
+                                        <td className="px-6 py-1 text-right">
+                                            {task.priority}
+                                        </td>
+                                        <td className="px-6 py-1">
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleEditClick(task)}
+                                                    className="text-blue-500 hover:text-blue-600"
+                                                >
+                                                    <PencilSquareIcon className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowDeleteModal(true);
+                                                        setTaskToDelete(task.id);
+                                                    }}
+                                                    className="text-red-500 hover:text-red-600"
+                                                >
+                                                    <TrashIcon className="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -360,17 +443,16 @@ export default function Tasks() {
                 </div>
             </div>
 
-            <DeleteConfirmationModal
-                isOpen={showDeleteModal}
-                onConfirm={() => {
-                    handleDeleteTask(taskToDelete);
-                    setShowDeleteModal(false);
-                }}
-                onCancel={() => {
-                    setShowDeleteModal(false);
-                    setTaskToDelete(null);
-                }}
-            />
+            {showDeleteModal && taskToDelete && (
+                <DeleteConfirmationModal
+                    isOpen={showDeleteModal}
+                    onConfirm={() => {
+                        handleDeleteTask(taskToDelete);
+                        setShowDeleteModal(false);
+                    }}
+                    onCancel={() => setShowDeleteModal(false)}
+                />
+            )}
         </div>
     );
 }
