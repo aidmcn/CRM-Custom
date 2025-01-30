@@ -209,151 +209,155 @@ export default function Tasks() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto mt-10 mb-20">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-300">Tasks</h1>
-                <button 
-                    onClick={() => {
-                        setIsAddingTask(true);
-                        setEditingTask(null);
-                        setNewTask({
-                            task: "",
-                            status: "To Do",
-                            priority: "Medium",
-                            dueDate: new Date().toISOString().split('T')[0]
-                        });
-                    }}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
-                >
-                    + Add Task
-                </button>
-            </div>
-            
-            {isAddingTask && (
-                <div className="mb-6 bg-gray-800 p-4 rounded-lg">
-                    <div className="grid grid-cols-2 gap-4">
-                        <input
-                            type="text"
-                            placeholder="Task name"
-                            value={newTask.task}
-                            onChange={(e) => setNewTask({ ...newTask, task: e.target.value })}
-                            className="bg-gray-700 text-white px-3 py-2 rounded-md"
-                        />
-                        <select
-                            value={newTask.priority}
-                            onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
-                            className="bg-gray-700 text-white px-3 py-2 rounded-md"
-                        >
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                        <input
-                            type="date"
-                            value={newTask.dueDate}
-                            onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                            className="bg-gray-700 text-white px-3 py-2 rounded-md"
-                        />
+        <div className="min-h-screen bg-gray-900 p-8">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-semibold text-white">Tasks</h1>
+                    <button 
+                        onClick={() => {
+                            setIsAddingTask(true);
+                            setEditingTask(null);
+                            setNewTask({
+                                task: "",
+                                status: "To Do",
+                                priority: "Medium",
+                                dueDate: new Date().toISOString().split('T')[0]
+                            });
+                        }}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+                    >
+                        + Add Task
+                    </button>
+                </div>
+                
+                {isAddingTask && (
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-xl mb-6">
+                        <div className="grid grid-cols-2 gap-4">
+                            <input
+                                type="text"
+                                placeholder="Task name"
+                                value={newTask.task}
+                                onChange={(e) => setNewTask({ ...newTask, task: e.target.value })}
+                                className="bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <select
+                                value={newTask.priority}
+                                onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
+                                className="bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                            <input
+                                type="date"
+                                value={newTask.dueDate}
+                                onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                                className="bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mt-4 flex justify-end gap-2">
+                            <button
+                                onClick={() => {
+                                    setIsAddingTask(false);
+                                    setEditingTask(null);
+                                }}
+                                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={editingTask ? handleUpdateTask : handleAddTask}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+                            >
+                                {editingTask ? 'Update Task' : 'Add Task'}
+                            </button>
+                        </div>
                     </div>
-                    <div className="mt-4 flex justify-end gap-2">
-                        <button
-                            onClick={() => {
-                                setIsAddingTask(false);
-                                setEditingTask(null);
-                            }}
-                            className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={editingTask ? handleUpdateTask : handleAddTask}
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
-                        >
-                            {editingTask ? 'Update Task' : 'Add Task'}
-                        </button>
+                )}
+
+                <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full table-auto">
+                            <thead className="bg-gray-700">
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Task</th>
+                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Status</th>
+                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Priority</th>
+                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Due Date</th>
+                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-700">
+                                {tasks.map((task) => (
+                                    <tr key={task.id} className="hover:bg-gray-700 transition-colors">
+                                        <td className="px-6 py-4 text-white">{task.task}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="relative w-[140px]">
+                                                <Listbox value={task.status} onChange={(newStatus) => handleStatusChange(task.id, newStatus)}>
+                                                    <div className="relative">
+                                                        <Listbox.Button className={`${statusStyles[task.status]} relative w-full cursor-pointer rounded-full pl-3 pr-8 py-1 text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-blue-500`}>
+                                                            <span className="block truncate">{task.status}</span>
+                                                            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                                                <ChevronDownIcon className={`h-4 w-4 ${statusStyles[task.status].split(' ')[1]}`} />
+                                                            </span>
+                                                        </Listbox.Button>
+                                                        <Transition
+                                                            as={Fragment}
+                                                            leave="transition ease-in duration-100"
+                                                            leaveFrom="opacity-100"
+                                                            leaveTo="opacity-0"
+                                                        >
+                                                            <Listbox.Options className="absolute z-50 mt-1 w-full overflow-auto rounded-lg bg-gray-800 py-0.5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm">
+                                                                {["To Do", "In Progress", "Completed"].map((status) => (
+                                                                    <Listbox.Option
+                                                                        key={status}
+                                                                        value={status}
+                                                                        className={({ active }) =>
+                                                                            `relative cursor-pointer select-none py-1.5 pl-3 pr-9 ${
+                                                                                active ? 'bg-gray-700' : ''
+                                                                            }`
+                                                                        }
+                                                                    >
+                                                                        {({ selected }) => (
+                                                                            <span className={`block truncate ${statusStyles[status as keyof typeof statusStyles].split(' ')[1]}`}>
+                                                                                {status}
+                                                                            </span>
+                                                                        )}
+                                                                    </Listbox.Option>
+                                                                ))}
+                                                            </Listbox.Options>
+                                                        </Transition>
+                                                    </div>
+                                                </Listbox>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-white">{task.priority}</td>
+                                        <td className="px-6 py-4">
+                                            <span className="bg-gray-700 text-gray-300 px-3 py-1 rounded-md text-sm">
+                                                {formatDate(task.dueDate)}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button 
+                                                onClick={() => handleEditClick(task)}
+                                                className="p-2 hover:bg-gray-600 rounded-md transition-colors mx-1"
+                                            >
+                                                <PencilSquareIcon className="h-5 w-5 text-blue-500" />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDeleteTask(task.id)}
+                                                className="p-2 hover:bg-gray-600 rounded-md transition-colors mx-1"
+                                            >
+                                                <TrashIcon className="h-5 w-5 text-red-500" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            )}
-
-            <div className="bg-gray-900 rounded-lg">
-                <table className="w-full">
-                    <thead>
-                        <tr className="border-b border-gray-700">
-                            <th className="text-left p-4 text-gray-400 font-medium">Task</th>
-                            <th className="text-left p-4 text-gray-400 font-medium">Status</th>
-                            <th className="text-left p-4 text-gray-400 font-medium">Priority</th>
-                            <th className="text-left p-4 text-gray-400 font-medium">Due Date</th>
-                            <th className="text-right p-4 text-gray-400 font-medium">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {tasks.map((task) => (
-                            <tr key={task.id} className="border-b border-gray-700 hover:bg-gray-800 transition-colors">
-                                <td className="p-4">{task.task}</td>
-                                <td className="p-4">
-                                    <div className="relative w-[140px]">
-                                        <Listbox value={task.status} onChange={(newStatus) => handleStatusChange(task.id, newStatus)}>
-                                            <div className="relative">
-                                                <Listbox.Button className={`${statusStyles[task.status]} relative w-full cursor-pointer rounded-full pl-3 pr-8 py-1 text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-blue-500`}>
-                                                    <span className="block truncate">{task.status}</span>
-                                                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                        <ChevronDownIcon className={`h-4 w-4 ${statusStyles[task.status].split(' ')[1]}`} />
-                                                    </span>
-                                                </Listbox.Button>
-                                                <Transition
-                                                    as={Fragment}
-                                                    leave="transition ease-in duration-100"
-                                                    leaveFrom="opacity-100"
-                                                    leaveTo="opacity-0"
-                                                >
-                                                    <Listbox.Options className="absolute z-50 mt-1 w-full overflow-auto rounded-lg bg-gray-800 py-0.5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm">
-                                                        {["To Do", "In Progress", "Completed"].map((status) => (
-                                                            <Listbox.Option
-                                                                key={status}
-                                                                value={status}
-                                                                className={({ active }) =>
-                                                                    `relative cursor-pointer select-none py-1.5 pl-3 pr-9 ${
-                                                                        active ? 'bg-gray-700' : ''
-                                                                    }`
-                                                                }
-                                                            >
-                                                                {({ selected }) => (
-                                                                    <span className={`block truncate ${statusStyles[status as keyof typeof statusStyles].split(' ')[1]}`}>
-                                                                        {status}
-                                                                    </span>
-                                                                )}
-                                                            </Listbox.Option>
-                                                        ))}
-                                                    </Listbox.Options>
-                                                </Transition>
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                </td>
-                                <td className="p-4">{task.priority}</td>
-                                <td className="p-4">
-                                    <span className="bg-gray-800 text-gray-400 px-3 py-1 rounded-md text-sm">
-                                        {formatDate(task.dueDate)}
-                                    </span>
-                                </td>
-                                <td className="p-4 text-right">
-                                    <button 
-                                        onClick={() => handleEditClick(task)}
-                                        className="p-2 hover:bg-gray-700 rounded-md transition-colors mx-1"
-                                    >
-                                        <PencilSquareIcon className="h-5 w-5 text-blue-500" />
-                                    </button>
-                                    <button 
-                                        onClick={() => handleDeleteTask(task.id)}
-                                        className="p-2 hover:bg-gray-700 rounded-md transition-colors mx-1"
-                                    >
-                                        <TrashIcon className="h-5 w-5 text-red-500" />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
             </div>
 
             <DeleteConfirmationModal
