@@ -45,7 +45,8 @@ const DEAL_STAGES = [
     "Proposal Sent",
     "Negotiation",
     "Closed Won",
-    "Closed Lost"
+    "Closed Lost",
+    "Completed"
 ];
 
 const stageStyles: Record<string, string> = {
@@ -53,7 +54,8 @@ const stageStyles: Record<string, string> = {
     "Proposal Sent": "bg-blue-500/20 text-blue-400",
     "Negotiation": "bg-yellow-500/20 text-yellow-400",
     "Closed Won": "bg-green-500/20 text-green-400",
-    "Closed Lost": "bg-red-500/20 text-red-400"
+    "Closed Lost": "bg-red-500/20 text-red-400",
+    "Completed": "bg-purple-500/20 text-purple-400"
 };
 
 const CURRENCIES = [
